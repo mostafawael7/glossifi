@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Input, Textarea } from '@/components/ui/Input'
@@ -35,23 +35,24 @@ export default function ProductsPage() {
     featured: false,
   })
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products')
-        if (response.ok) {
-          const data = await response.json()
-          setProducts(data)
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error)
-        toast.error('Failed to load products')
-      } finally {
-        setLoading(false)
+  const fetchProducts = useCallback(async () => {
+    try {
+      const response = await fetch('/api/products')
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data)
       }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      toast.error('Failed to load products')
+    } finally {
+      setLoading(false)
     }
-    fetchProducts()
   }, [])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   const handleOpenModal = (product?: Product) => {
     if (product) {
