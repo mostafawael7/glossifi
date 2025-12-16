@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table'
@@ -33,24 +33,25 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('')
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const url = statusFilter ? `/api/orders?status=${statusFilter}` : '/api/orders'
-        const response = await fetch(url)
-        if (response.ok) {
-          const data = await response.json()
-          setOrders(data)
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error)
-        toast.error('Failed to load orders')
-      } finally {
-        setLoading(false)
+  const fetchOrders = useCallback(async () => {
+    try {
+      const url = statusFilter ? `/api/orders?status=${statusFilter}` : '/api/orders'
+      const response = await fetch(url)
+      if (response.ok) {
+        const data = await response.json()
+        setOrders(data)
       }
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+      toast.error('Failed to load orders')
+    } finally {
+      setLoading(false)
     }
-    fetchOrders()
   }, [statusFilter])
+
+  useEffect(() => {
+    fetchOrders()
+  }, [fetchOrders])
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
