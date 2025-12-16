@@ -32,43 +32,42 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [productsRes, ordersRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/orders'),
+        ])
+
+        if (productsRes.ok && ordersRes.ok) {
+          const products = await productsRes.json()
+          const orders = await ordersRes.json()
+
+          const totalRevenue = orders.reduce(
+            (sum: number, order: Order) => sum + parseFloat(order.totalAmount),
+            0
+          )
+          const pendingOrders = orders.filter(
+            (order: Order) => order.status === 'PENDING'
+          ).length
+
+          setStats({
+            totalProducts: products.length,
+            totalOrders: orders.length,
+            totalRevenue,
+            pendingOrders,
+          })
+
+          setRecentOrders(orders.slice(0, 5))
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchDashboardData()
   }, [])
-
-  const fetchDashboardData = async () => {
-    try {
-      const [productsRes, ordersRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/orders'),
-      ])
-
-      if (productsRes.ok && ordersRes.ok) {
-        const products = await productsRes.json()
-        const orders = await ordersRes.json()
-
-        const totalRevenue = orders.reduce(
-          (sum: number, order: Order) => sum + parseFloat(order.totalAmount),
-          0
-        )
-        const pendingOrders = orders.filter(
-          (order: Order) => order.status === 'PENDING'
-        ).length
-
-        setStats({
-          totalProducts: products.length,
-          totalOrders: orders.length,
-          totalRevenue,
-          pendingOrders,
-        })
-
-        setRecentOrders(orders.slice(0, 5))
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   if (loading) {
     return <div className="text-center py-12">Loading dashboard...</div>

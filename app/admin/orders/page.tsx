@@ -34,24 +34,23 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('')
 
   useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const url = statusFilter ? `/api/orders?status=${statusFilter}` : '/api/orders'
+        const response = await fetch(url)
+        if (response.ok) {
+          const data = await response.json()
+          setOrders(data)
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error)
+        toast.error('Failed to load orders')
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchOrders()
   }, [statusFilter])
-
-  const fetchOrders = async () => {
-    try {
-      const url = statusFilter ? `/api/orders?status=${statusFilter}` : '/api/orders'
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setOrders(data)
-      }
-    } catch (error) {
-      console.error('Error fetching orders:', error)
-      toast.error('Failed to load orders')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {

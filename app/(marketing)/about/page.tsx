@@ -31,7 +31,7 @@ export default function AboutPage() {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">Our Values</h2>
               <ul className="list-disc list-inside space-y-2 leading-relaxed">
                 <li><strong>Quality First:</strong> We never compromise on materials or craftsmanship</li>
-                <li><strong>Sustainability:</strong> We're committed to environmentally responsible practices</li>
+                <li><strong>Sustainability:</strong> We&apos;re committed to environmentally responsible practices</li>
                 <li><strong>Customer Focus:</strong> Your satisfaction is our top priority</li>
                 <li><strong>Innovation:</strong> We continuously improve and innovate our designs</li>
               </ul>
@@ -40,7 +40,7 @@ export default function AboutPage() {
             <section>
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">Why Choose Glossifi?</h2>
               <p className="leading-relaxed">
-                When you choose Glossifi, you're choosing more than just a mug. You're choosing
+                When you choose Glossifi, you&apos;re choosing more than just a mug. You&apos;re choosing
                 a piece that will be part of your daily routine, bringing beauty and quality to
                 every sip. Our mugs are designed to last, crafted with care, and made to bring
                 joy to your everyday moments.

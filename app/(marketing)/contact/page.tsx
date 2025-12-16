@@ -21,7 +21,7 @@ export default function ContactPage() {
     // In a real application, you would send this to an API endpoint
     // For now, we'll just show a success message
     setTimeout(() => {
-      toast.success('Thank you for your message! We\'ll get back to you soon.')
+      toast.success('Thank you for your message! We&apos;ll get back to you soon.')
       setFormData({ name: '', email: '', subject: '', message: '' })
       setIsSubmitting(false)
     }, 1000)
@@ -40,7 +40,7 @@ export default function ContactPage() {
         <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-purple to-brand-lavender bg-clip-text text-transparent mb-2">Get in Touch</h1>
           <p className="text-slate-600 mb-8">
-            Have a question or want to get in touch? We'd love to hear from you.
+            Have a question or want to get in touch? We&apos;d love to hear from you.
           </p>
 
           <div className="grid md:grid-cols-2 gap-8 mb-8">

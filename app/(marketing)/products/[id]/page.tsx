@@ -34,27 +34,26 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (params.id) {
+      const fetchProduct = async (id: string) => {
+        try {
+          const response = await fetch(`/api/products/${id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setProduct(data)
+          } else {
+            toast.error('Product not found')
+            router.push('/products')
+          }
+        } catch (error) {
+          console.error('Error fetching product:', error)
+          toast.error('Failed to load product')
+        } finally {
+          setLoading(false)
+        }
+      }
       fetchProduct(params.id as string)
     }
-  }, [params.id])
-
-  const fetchProduct = async (id: string) => {
-    try {
-      const response = await fetch(`/api/products/${id}`)
-      if (response.ok) {
-        const data = await response.json()
-        setProduct(data)
-      } else {
-        toast.error('Product not found')
-        router.push('/products')
-      }
-    } catch (error) {
-      console.error('Error fetching product:', error)
-      toast.error('Failed to load product')
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [params.id, router])
 
   const handleAddToCart = () => {
     if (!product) return

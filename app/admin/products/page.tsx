@@ -36,23 +36,22 @@ export default function ProductsPage() {
   })
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        if (response.ok) {
+          const data = await response.json()
+          setProducts(data)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        toast.error('Failed to load products')
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchProducts()
   }, [])
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('/api/products')
-      if (response.ok) {
-        const data = await response.json()
-        setProducts(data)
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error)
-      toast.error('Failed to load products')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleOpenModal = (product?: Product) => {
     if (product) {

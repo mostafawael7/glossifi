@@ -31,35 +31,34 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [featuredRes, allRes] = await Promise.all([
+          fetch('/api/products?featured=true'),
+          fetch('/api/products')
+        ])
+        
+        if (featuredRes.ok) {
+          const featured = await featuredRes.json()
+          setFeaturedProducts(featured.slice(0, 4))
+        }
+        
+        if (allRes.ok) {
+          const all = await allRes.json()
+          // Sort by creation date for new arrivals
+          const sorted = all.sort((a: Product, b: Product) => 
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          )
+          setAllProducts(sorted)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchProducts()
   }, [])
-
-  const fetchProducts = async () => {
-    try {
-      const [featuredRes, allRes] = await Promise.all([
-        fetch('/api/products?featured=true'),
-        fetch('/api/products')
-      ])
-      
-      if (featuredRes.ok) {
-        const featured = await featuredRes.json()
-        setFeaturedProducts(featured.slice(0, 4))
-      }
-      
-      if (allRes.ok) {
-        const all = await allRes.json()
-        // Sort by creation date for new arrivals
-        const sorted = all.sort((a: Product, b: Product) => 
-          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-        )
-        setAllProducts(sorted)
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleAddToCart = (product: Product) => {
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]')
@@ -248,7 +247,7 @@ export default function HomePage() {
       <section className="py-16 bg-brand-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Our Customers' Opinions</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Our Customers&apos; Opinions</h2>
             <p className="text-slate-600">Get to know us better</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -265,7 +264,7 @@ export default function HomePage() {
                     </svg>
                   ))}
                 </div>
-                <p className="text-slate-700 mb-4 italic">"{testimonial.text}"</p>
+                <p className="text-slate-700 mb-4 italic">&quot;{testimonial.text}&quot;</p>
                 <p className="font-semibold text-slate-900">— {testimonial.name}</p>
               </div>
             ))}
