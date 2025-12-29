@@ -1,11 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatPrice } from '@/lib/utils'
+import toast from 'react-hot-toast'
 
 interface Product {
   id: string
@@ -24,9 +25,42 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const isOutOfStock = product.stock === 0
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+    setIsFavorite(wishlist.some((item: { id: string }) => item.id === product.id))
+  }, [product.id])
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+    
+    if (isFavorite) {
+      const updated = wishlist.filter((item: { id: string }) => item.id !== product.id)
+      localStorage.setItem('wishlist', JSON.stringify(updated))
+      setIsFavorite(false)
+      toast.success('Removed from favorites')
+    } else {
+      const wishlistItem = {
+        id: product.id,
+        name: product.name,
+        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+        imageUrl: product.imageUrl,
+      }
+      wishlist.push(wishlistItem)
+      localStorage.setItem('wishlist', JSON.stringify(wishlist))
+      setIsFavorite(true)
+      toast.success('Added to favorites')
+    }
+    
+    window.dispatchEvent(new Event('storage'))
+  }
 
   return (
-    <Card className="group hover:shadow-lg transition-shadow">
+    <Card className="group hover:shadow-lg transition-shadow flex flex-col h-full">
       <Link href={`/products/${product.id}`}>
         <div className="relative h-64 w-full overflow-hidden bg-gray-100">
           <Image
@@ -37,20 +71,42 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {product.featured && (
-            <div className="absolute top-2 right-2 bg-brand-purple text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
+            <div className="absolute top-2 left-2 bg-brand-purple text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
               Featured
             </div>
           )}
+          <button
+            onClick={toggleFavorite}
+            className="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors z-10"
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <svg
+              className={`w-6 h-6 transition-colors ${
+                isFavorite ? 'fill-red-500 text-red-500' : 'fill-none text-gray-600'
+              }`}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
         </div>
       </Link>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-grow">
         <Link href={`/products/${product.id}`}>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1 hover:text-brand-purple transition-colors">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3 hover:text-brand-purple transition-colors line-clamp-2">
             {product.name}
           </h3>
         </Link>
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-        <div className="flex items-center justify-between">
+        {product.stock > 0 && product.stock < 10 && (
+          <p className="text-xs text-orange-600 mb-3">Only {product.stock} left in stock</p>
+        )}
+        <div className="flex items-center justify-between mt-auto">
           <span className="text-xl font-bold text-gray-900">
             {formatPrice(product.price)}
           </span>
@@ -67,9 +123,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
             </Button>
           )}
         </div>
-        {product.stock > 0 && product.stock < 10 && (
-          <p className="text-xs text-orange-600 mt-2">Only {product.stock} left in stock</p>
-        )}
       </div>
     </Card>
   )

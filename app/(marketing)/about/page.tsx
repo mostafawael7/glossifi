@@ -2,10 +2,10 @@ import React from 'react'
 
 export default function AboutPage() {
   return (
-    <div className="py-12 bg-brand-cream min-h-screen">
+    <div className="py-12 bg-white min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-purple to-brand-lavender bg-clip-text text-transparent mb-6">About Glossifi</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-purple to-brand-lavender bg-clip-text text-transparent mb-6 text-center">About Glossifi</h1>
           
           <div className="space-y-6 text-slate-700">
             <section>

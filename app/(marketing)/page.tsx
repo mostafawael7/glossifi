@@ -158,7 +158,7 @@ export default function HomePage() {
       </section>
 
       {/* Shop Collections */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Shop Our Collections</h2>
@@ -188,7 +188,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 bg-brand-cream">
+      <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Featured Products</h2>
@@ -210,7 +210,7 @@ export default function HomePage() {
       </section>
 
       {/* New Arrivals */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">New Arrivals</h2>
@@ -227,7 +227,7 @@ export default function HomePage() {
       </section>
 
       {/* Best Sellers */}
-      <section className="py-16 bg-brand-cream">
+      <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Best Sellers</h2>
@@ -244,7 +244,7 @@ export default function HomePage() {
       </section>
 
       {/* Customer Testimonials */}
-      <section className="py-16 bg-brand-cream">
+      <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Our Customers&apos; Opinions</h2>
@@ -273,7 +273,7 @@ export default function HomePage() {
       </section>
 
       {/* Special Gifts Section */}
-      <section className="py-16 bg-gradient-to-br from-brand-purple/10 to-brand-lavender/10">
+      <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-slate-900 mb-4">
             Special Gifts... Printed Specifically for Your Loved Ones
