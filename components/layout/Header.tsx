@@ -36,33 +36,33 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-28 relative">
+            <Link href="/" className="flex items-center flex-shrink-0 z-10">
               <Image 
                 src="/logos/logo-black.png" 
                 alt="Glossifi" 
-                width={140} 
-                height={50}
-                className="h-12 w-auto"
+                width={360} 
+                height={128}
+                className="h-36 w-auto"
                 priority
               />
             </Link>
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-slate-700 hover:text-brand-purple transition-colors font-medium">
+            <nav className="hidden md:flex items-center justify-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+              <Link href="/" className="text-slate-700 hover:text-brand-purple transition-colors font-semibold text-lg py-2 px-3">
                 Home
               </Link>
-              <Link href="/products" className="text-slate-700 hover:text-brand-purple transition-colors font-medium">
+              <Link href="/products" className="text-slate-700 hover:text-brand-purple transition-colors font-semibold text-lg py-2 px-3">
                 Products
               </Link>
-              <Link href="/about" className="text-slate-700 hover:text-brand-purple transition-colors font-medium">
+              <Link href="/about" className="text-slate-700 hover:text-brand-purple transition-colors font-semibold text-lg py-2 px-3">
                 About
               </Link>
-              <Link href="/contact" className="text-slate-700 hover:text-brand-purple transition-colors font-medium">
+              <Link href="/contact" className="text-slate-700 hover:text-brand-purple transition-colors font-semibold text-lg py-2 px-3">
                 Contact
               </Link>
             </nav>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-shrink-0 ml-auto z-10">
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-slate-700 hover:text-brand-purple transition-colors"
