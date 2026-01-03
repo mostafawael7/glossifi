@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Input, Textarea } from '@/components/ui/Input'
@@ -592,7 +593,7 @@ export default function ProductsPage() {
                 />
                 {mainImagePreview && (
                   <div className="mt-2">
-                    <img src={mainImagePreview} alt="Preview" className="h-32 w-32 object-cover rounded-lg border border-slate-300" />
+                    <Image src={mainImagePreview} alt="Preview" width={128} height={128} unoptimized className="h-32 w-32 object-cover rounded-lg border border-slate-300" />
                     <button
                       type="button"
                       onClick={() => {
@@ -654,7 +655,7 @@ export default function ProductsPage() {
                         />
                         {additionalImagePreviews[index] && (
                           <div className="mt-2">
-                            <img src={additionalImagePreviews[index]} alt="Preview" className="h-24 w-24 object-cover rounded-lg border border-slate-300" />
+                            <Image src={additionalImagePreviews[index]} alt="Preview" width={96} height={96} unoptimized className="h-24 w-24 object-cover rounded-lg border border-slate-300" />
                           </div>
                         )}
                       </div>

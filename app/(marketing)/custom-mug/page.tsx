@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { Input, Textarea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -270,9 +271,12 @@ export default function CustomMugPage() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   {imagePreviews.map((preview, index) => (
                     <div key={index} className="relative group">
-                      <img
+                      <Image
                         src={preview}
                         alt={`Preview ${index + 1}`}
+                        width={200}
+                        height={128}
+                        unoptimized
                         className="w-full h-32 object-cover rounded-lg border border-slate-300"
                       />
                       <button

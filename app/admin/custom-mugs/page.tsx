@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table'
@@ -219,7 +219,7 @@ export default function CustomMugsPage() {
   const [selectedRequest, setSelectedRequest] = useState<CustomMugRequest | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('')
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true)
       const url = statusFilter
@@ -238,11 +238,11 @@ export default function CustomMugsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter])
 
   useEffect(() => {
     fetchRequests()
-  }, [statusFilter])
+  }, [fetchRequests])
 
   const handleUpdate = async (
     requestId: string,

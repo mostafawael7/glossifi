@@ -111,7 +111,7 @@ export default function VerifyOTPPage() {
             Verify Your Email
           </h1>
           <p className="text-slate-600">
-            We've sent a 6-digit verification code to
+            We&apos;ve sent a 6-digit verification code to
           </p>
           <p className="text-slate-900 font-semibold mt-1">{email}</p>
         </div>
@@ -149,7 +149,7 @@ export default function VerifyOTPPage() {
 
           <div className="text-center">
             <p className="text-sm text-slate-600 mb-3">
-              Didn't receive the code?
+              Didn&apos;t receive the code?
             </p>
             <Button
               type="button"

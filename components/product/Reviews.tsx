@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { ReviewForm } from './ReviewForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -29,11 +29,7 @@ export const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [userHasReviewed, setUserHasReviewed] = useState(false)
 
-  useEffect(() => {
-    fetchReviews()
-  }, [productId])
-
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const response = await fetch(`/api/reviews?productId=${productId}`)
       if (response.ok) {
@@ -55,7 +51,11 @@ export const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [productId, session?.user?.id])
+
+  useEffect(() => {
+    fetchReviews()
+  }, [fetchReviews])
 
   const handleReviewSubmitted = () => {
     fetchReviews()
