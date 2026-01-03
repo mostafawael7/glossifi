@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 
+// Force dynamic rendering since we use getServerSession which uses headers()
+export const dynamic = 'force-dynamic'
+
 const wishlistItemSchema = z.object({
   productId: z.string().uuid(),
 })

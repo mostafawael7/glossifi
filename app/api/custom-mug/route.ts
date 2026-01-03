@@ -6,6 +6,9 @@ import { db } from "@/lib/db"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { sendCustomMugRequestEmail, sendCustomMugConfirmationEmail } from "@/lib/email"
 
+// Force dynamic rendering since we use getServerSession which uses headers()
+export const dynamic = 'force-dynamic'
+
 // Note: Next.js 14 doesn't have built-in multipart/form-data parsing
 // We'll use a workaround with FormData API
 const customMugSchema = z.object({

@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering since we use getServerSession which uses headers()
+export const dynamic = 'force-dynamic'
+
 const updateCustomMugSchema = z.object({
   status: z.enum(['PENDING', 'QUOTED', 'APPROVED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
   estimatedPrice: z.coerce.number().positive().optional(),

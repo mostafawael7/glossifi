@@ -5,6 +5,9 @@ import { db } from "@/lib/db"
 import { z } from "zod"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 
+// Force dynamic rendering since we use getServerSession which uses headers()
+export const dynamic = 'force-dynamic'
+
 const productSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
