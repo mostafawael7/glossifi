@@ -25,7 +25,7 @@ export async function sendContactEmail(data: {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      replyTo: data.email,
+      reply_to: data.email,
       subject: `Contact Form: ${data.subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -102,7 +102,7 @@ export async function sendCustomMugRequestEmail(data: {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      replyTo: data.email,
+      reply_to: data.email,
       subject: `New Custom Mug Request - ${data.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
