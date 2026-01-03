@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import toast from 'react-hot-toast'
 
-export default function LoginPage() {
+function LoginForm() {
   const { data: session } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -119,6 +119,22 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-brand-cream py-12">
+        <Card className="w-full max-w-md">
+          <CardContent>
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
 

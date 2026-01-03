@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 
-export default function VerifyOTPPage() {
+function VerifyOTPForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -175,6 +175,22 @@ export default function VerifyOTPPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function VerifyOTPPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-brand-cream py-12 px-4">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+          <div className="text-center">
+            <div className="text-slate-600">Loading...</div>
+          </div>
+        </div>
+      </div>
+    }>
+      <VerifyOTPForm />
+    </Suspense>
   )
 }
 
