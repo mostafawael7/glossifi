@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering since we use getServerSession which uses headers()
+export const dynamic = 'force-dynamic'
+
 // GET /api/custom-mug/list - Get all custom mug requests (admin only)
 export async function GET(request: NextRequest) {
   try {
