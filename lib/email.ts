@@ -1,11 +1,17 @@
 import { Resend } from 'resend'
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 // Default email addresses
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'glossyprint2025@gmail.com'
+
+// Lazy initialization of Resend client
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not configured')
+  }
+  return new Resend(apiKey)
+}
 
 /**
  * Send contact form email to admin
@@ -22,6 +28,7 @@ export async function sendContactEmail(data: {
       return { success: false, error: 'Email service not configured' }
     }
 
+    const resend = getResendClient()
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
@@ -79,6 +86,7 @@ export async function sendCustomMugRequestEmail(data: {
       return { success: false, error: 'Email service not configured' }
     }
 
+    const resend = getResendClient()
     const mugTypeLabels: Record<string, string> = {
       THERMAL: 'Thermal',
       PORCELAIN: 'Porcelain',
@@ -177,6 +185,7 @@ export async function sendCustomMugConfirmationEmail(data: {
       return { success: false, error: 'Email service not configured' }
     }
 
+    const resend = getResendClient()
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: data.email,
@@ -224,6 +233,7 @@ export async function sendOTPEmail(data: {
       return { success: false, error: 'Email service not configured' }
     }
 
+    const resend = getResendClient()
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: data.email,
@@ -262,6 +272,4 @@ export async function sendOTPEmail(data: {
     return { success: false, error: 'Failed to send email' }
   }
 }
-
-export default resend
 
