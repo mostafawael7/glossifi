@@ -18,13 +18,28 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // In a real application, you would send this to an API endpoint
-    // For now, we'll just show a success message
-    setTimeout(() => {
-      toast.success('Thank you for your message! We&apos;ll get back to you soon.')
-      setFormData({ name: '', email: '', subject: '', message: '' })
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        toast.success('Thank you for your message! We\'ll get back to you soon.')
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to send message. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error sending message:', error)
+      toast.error('Failed to send message. Please try again.')
+    } finally {
       setIsSubmitting(false)
-    }, 1000)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -35,16 +50,16 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="py-12 bg-white min-h-screen">
+    <div className="py-8 sm:py-12 bg-white min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-purple to-brand-lavender bg-clip-text text-transparent mb-2">Get in Touch</h1>
-          <p className="text-slate-600 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 md:p-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-brand-purple to-brand-lavender bg-clip-text text-transparent mb-2">Get in Touch</h1>
+          <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8">
             Have a question or want to get in touch? We&apos;d love to hear from you.
           </p>
 
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Get in Touch</h2>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Get in Touch</h2>
             <div className="space-y-4 text-slate-700">
               <div className="flex items-start gap-3">
                 <svg className="w-5 h-5 text-brand-purple mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +77,7 @@ export default function ContactPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
               <Input
                 label="Name"
                 name="name"

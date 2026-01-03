@@ -1,201 +1,171 @@
 # Glossifi E-commerce Platform
 
-A full-stack e-commerce platform for Glossifi mugs built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, and Prisma.
+A modern, full-stack e-commerce platform for Glossifi premium mugs. Built with cutting-edge web technologies to provide a seamless shopping experience for customers and an intuitive management interface for administrators.
 
-## Features
+## Overview
 
-### Marketing Website
-- **Homepage** with hero section and featured products
-- **Product Listing** page with grid layout
-- **Product Detail** pages with add to cart functionality
-- **Shopping Cart** with quantity management
-- **Checkout** page with order submission
-- **About** page with brand story
-- **Contact** page with contact form
+Glossifi is a complete e-commerce solution featuring a customer-facing marketing website and a secure admin dashboard. The platform enables customers to browse products, manage their shopping cart, and place orders, while administrators can manage products, track orders, and monitor business metrics.
 
-### Admin Dashboard
-- **Authentication** with NextAuth.js
-- **Dashboard** with statistics and recent orders
-- **Product Management** with full CRUD operations
-- **Order Management** with status updates
-- Protected routes with session management
+## Key Features
 
-## Tech Stack
+### Customer Features
+- Browse and search products with detailed information
+- Shopping cart with quantity management (stored in browser localStorage)
+- Secure checkout process with order submission
+- Product wishlist functionality
+- Custom personalized mug request form with image upload
+- Product reviews and ratings
+- Order history tracking
+- Responsive design for all devices
 
-- **Framework**: Next.js 14 (App Router)
+### Admin Features
+- Secure authentication system
+- Product management (create, read, update, delete)
+- Order management with status tracking
+- Custom mug request management
+- Dashboard with business statistics
+- Protected admin routes
+
+## Technology Stack
+
+- **Frontend Framework**: Next.js 14 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS with custom brand colors
 - **Database**: PostgreSQL
 - **ORM**: Prisma
-- **Authentication**: NextAuth.js
-- **UI Components**: Custom components with Tailwind
+- **Authentication**: NextAuth.js (JWT-based)
+- **Validation**: Zod
 - **Notifications**: React Hot Toast
+- **Image Storage**: Cloudinary (free tier)
+- **Font**: Montserrat (Google Fonts)
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
-
-- Node.js 18+ 
+- Node.js 18 or higher
 - PostgreSQL database
-- npm or yarn
+- npm or yarn package manager
 
 ### Installation
 
-1. Clone the repository:
-```bash
-cd Glossifi
-```
-
-2. Install dependencies:
+1. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+2. **Set up environment variables**
 Create a `.env` file in the root directory:
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/glossifi"
 NEXTAUTH_SECRET="your-secret-key-here"
 NEXTAUTH_URL="http://localhost:3000"
+
+# Cloudinary Configuration (for image uploads)
+# Sign up at https://cloudinary.com (free tier available)
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
+# Or use CLOUDINARY_URL format:
+# CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
+
+# Resend Configuration (for email notifications)
+# Sign up at https://resend.com (free tier: 3,000 emails/month)
+RESEND_API_KEY="re_your_api_key_here"
+RESEND_FROM_EMAIL="onboarding@resend.dev"  # Or your verified domain email
+ADMIN_EMAIL="glossyprint2025@gmail.com"  # Where to receive notifications
 ```
 
-4. Set up the database:
+3. **Initialize database**
 ```bash
-# Generate Prisma client
 npm run db:generate
-
-# Push schema to database
 npm run db:push
-
-# Or run migrations
-npm run db:migrate
 ```
 
-5. Create an admin user:
-You can create an admin user using the provided script:
-```bash
-npm run create-admin [email] [password] [name]
-```
-
-Example:
+4. **Create admin user**
 ```bash
 npm run create-admin admin@glossifi.com admin123 "Admin User"
 ```
 
-Or manually using Prisma Studio: `npm run db:studio`
+5. **Seed sample products (optional)**
+   ```bash
+   npm run seed:products
+   ```
 
-6. Run the development server:
+6. **Start development server**
 ```bash
 npm run dev
 ```
 
-7. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Visit [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Project Structure
 
 ```
 Glossifi/
-├── app/                    # Next.js App Router
-│   ├── (marketing)/       # Marketing pages (public)
-│   │   ├── page.tsx       # Homepage
-│   │   ├── products/      # Product listing & details
-│   │   ├── about/         # About page
-│   │   ├── contact/       # Contact page
-│   │   └── checkout/      # Checkout page
-│   ├── admin/             # Admin dashboard (protected)
-│   │   ├── login/         # Login page
-│   │   ├── dashboard/     # Dashboard overview
-│   │   ├── products/      # Product management
-│   │   └── orders/        # Order management
-│   ├── api/               # API routes
-│   │   ├── products/      # Product CRUD endpoints
-│   │   ├── orders/        # Order endpoints
-│   │   └── auth/          # Authentication endpoints
-│   └── layout.tsx         # Root layout
-├── components/            # Reusable components
-│   ├── ui/               # UI components (buttons, cards, etc.)
+├── app/                    # Next.js App Router pages
+│   ├── (marketing)/       # Public marketing pages
+│   ├── admin/             # Protected admin dashboard
+│   └── api/               # API route handlers
+├── components/            # React components
+│   ├── ui/               # Reusable UI components
 │   ├── product/          # Product-related components
-│   ├── layout/           # Layout components
+│   ├── layout/           # Layout components (Header, Footer)
 │   └── admin/            # Admin-specific components
-├── lib/                  # Utilities
-│   ├── db.ts             # Prisma client
-│   ├── auth.ts           # Auth configuration
+├── lib/                  # Utility libraries
+│   ├── db.ts             # Prisma database client
+│   ├── auth.ts           # NextAuth configuration
 │   └── utils.ts          # Helper functions
-├── prisma/               # Database schema & migrations
-│   └── schema.prisma     # Database schema
+├── prisma/               # Database schema
+│   └── schema.prisma     # Prisma schema definition
+├── scripts/              # Utility scripts
+│   ├── create-admin.ts   # Admin user creation script
+│   └── seed-products.ts  # Product seeding script
 └── public/               # Static assets
+    └── logos/            # Brand logo files
 ```
 
-## API Endpoints
-
-### Products
-- `GET /api/products` - List all products (public)
-- `GET /api/products?featured=true` - Get featured products (public)
-- `GET /api/products/[id]` - Get single product (public)
-- `POST /api/products` - Create product (admin only)
-- `PUT /api/products/[id]` - Update product (admin only)
-- `DELETE /api/products/[id]` - Delete product (admin only)
-
-### Orders
-- `GET /api/orders` - List orders (admin only)
-- `GET /api/orders?status=PENDING` - Filter orders by status (admin only)
-- `GET /api/orders/[id]` - Get single order (admin only)
-- `POST /api/orders` - Create order (public)
-- `PUT /api/orders/[id]` - Update order status (admin only)
-
-## Database Schema
-
-### Product
-- id (UUID)
-- name (String)
-- description (Text)
-- price (Decimal)
-- imageUrl (String)
-- stock (Integer)
-- category (String, optional)
-- featured (Boolean)
-- createdAt (DateTime)
-- updatedAt (DateTime)
-
-### Order
-- id (UUID)
-- customerName (String)
-- customerEmail (String)
-- customerPhone (String, optional)
-- shippingAddress (Text)
-- totalAmount (Decimal)
-- status (Enum: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED)
-- items (JSON)
-- createdAt (DateTime)
-- updatedAt (DateTime)
-
-### AdminUser
-- id (UUID)
-- email (String, unique)
-- password (String, hashed)
-- name (String)
-- createdAt (DateTime)
-
-## Development
-
-### Available Scripts
+## Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run db:generate` - Generate Prisma client
-- `npm run db:push` - Push schema to database
-- `npm run db:migrate` - Run migrations
-- `npm run db:studio` - Open Prisma Studio
+- `npm run db:push` - Push schema to database (development)
+- `npm run db:migrate` - Create and run migrations
+- `npm run db:studio` - Open Prisma Studio (database GUI)
+- `npm run create-admin` - Create admin user
+- `npm run seed:products` - Seed database with sample products
 
-## Notes
+## Documentation
 
-- The logo file should be placed in `public/logo.svg` or `public/logo.png`
-- For production, consider adding payment integration (Stripe, PayPal)
-- Image uploads can be handled via local storage initially, or cloud storage (Cloudinary, AWS S3) for production
-- Admin authentication uses email/password; can be enhanced with OAuth later
-- Shopping cart is stored in localStorage for simplicity
+For detailed documentation, please refer to:
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment instructions and production setup
+- **[DATABASE.md](./DATABASE.md)** - Database operations, migrations, and maintenance
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Code architecture and design patterns
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and changes
+- **[BRANDING_GUIDE.md](./BRANDING_GUIDE.md)** - Brand colors, typography, and logo usage
+
+## Important Notes
+
+- **Logo Files**: Logo files are located in `/public/logos/` directory:
+  - `logo-black.png` - For light backgrounds
+  - `logo-white.png` - For dark backgrounds
+- **Shopping Cart**: Cart data is stored in browser localStorage
+- **Wishlist**: Wishlist functionality uses localStorage (database model exists for future implementation)
+- **Authentication**: Admin authentication uses email/password with bcrypt hashing
+- **Image Storage**: Currently supports external image URLs; cloud storage integration recommended for production
+
+## Future Enhancements
+
+- Payment gateway integration (Stripe, PayPal)
+- User accounts and authentication for customers
+- Email notifications for orders
+- Product image upload functionality
+- Advanced search and filtering
+- Order tracking system
+- Customer reviews and ratings
 
 ## License
 

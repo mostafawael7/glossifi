@@ -56,10 +56,10 @@ function ProductsContent() {
   }, [])
 
   const filters = [
-    { name: 'Thermal', value: 'Thermal' },
-    { name: 'Porcelain', value: 'Porcelain' },
-    { name: 'Mazzotte', value: 'Mazzotte' },
-    { name: 'Iced Coffee', value: 'Iced Coffee' },
+    { name: 'Thermal', value: 'THERMAL' },
+    { name: 'Porcelain', value: 'PORCELAIN' },
+    { name: 'Mazzotte', value: 'MAZZOTTE' },
+    { name: 'Iced Coffee', value: 'ICED_COFFEE' },
   ]
 
   const filteredProducts = selectedFilter
@@ -103,14 +103,14 @@ function ProductsContent() {
     <div className="py-12 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">All Products</h1>
-          <p className="text-gray-600 mb-6">Browse our complete collection of premium mugs</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">All Products</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">Browse our complete collection of premium mugs</p>
           
           {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <button
               onClick={() => handleFilterClick(null)}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+              className={`px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 selectedFilter === null
                   ? 'bg-brand-purple text-white shadow-lg'
                   : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-brand-purple hover:text-brand-purple'
@@ -122,7 +122,7 @@ function ProductsContent() {
               <button
                 key={filter.name}
                 onClick={() => handleFilterClick(filter.value)}
-                className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                className={`px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                   selectedFilter === filter.value
                     ? 'bg-brand-purple text-white shadow-lg'
                     : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-brand-purple hover:text-brand-purple'

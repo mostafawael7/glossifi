@@ -40,18 +40,18 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
       onClick={onClose}
     >
       <div
         className={cn(
-          'bg-white rounded-xl shadow-2xl w-full mx-4 border border-slate-200',
+          'bg-white rounded-xl shadow-2xl w-full mx-4 border border-slate-200 flex flex-col max-h-[90vh]',
           sizes[size]
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+          <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between flex-shrink-0">
             <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
             <button
               onClick={onClose}
@@ -61,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
             </button>
           </div>
         )}
-        <div className="p-6 bg-white">{children}</div>
+        <div className="p-6 bg-white overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   )

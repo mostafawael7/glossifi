@@ -20,6 +20,11 @@ export default async function AdminLayoutWrapper({
     return <>{children}</>
   }
 
+  // Check if user is admin
+  if (session.user.role !== 'admin') {
+    redirect('/')
+  }
+
   return <AdminLayout>{children}</AdminLayout>
 }
 

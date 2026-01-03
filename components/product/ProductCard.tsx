@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatPrice } from '@/lib/utils'
@@ -24,39 +25,103 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+  const { data: session } = useSession()
   const isOutOfStock = product.stock === 0
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
+  // Check wishlist status on mount and when product/session changes
   useEffect(() => {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
-    setIsFavorite(wishlist.some((item: { id: string }) => item.id === product.id))
-  }, [product.id])
+    const checkWishlistStatus = async () => {
+      if (session?.user) {
+        // Check database wishlist
+        try {
+          const response = await fetch(`/api/wishlist/check?productId=${product.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setIsFavorite(data.isInWishlist)
+          }
+        } catch (error) {
+          console.error('Error checking wishlist:', error)
+        }
+      } else {
+        // Check localStorage wishlist
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+        setIsFavorite(wishlist.some((item: { id: string }) => item.id === product.id))
+      }
+    }
 
-  const toggleFavorite = (e: React.MouseEvent) => {
+    checkWishlistStatus()
+  }, [product.id, session])
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
-    
-    if (isFavorite) {
-      const updated = wishlist.filter((item: { id: string }) => item.id !== product.id)
-      localStorage.setItem('wishlist', JSON.stringify(updated))
-      setIsFavorite(false)
-      toast.success('Removed from favorites')
-    } else {
-      const wishlistItem = {
-        id: product.id,
-        name: product.name,
-        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
-        imageUrl: product.imageUrl,
+    if (isLoading) return
+    setIsLoading(true)
+
+    try {
+      if (session?.user) {
+        // Use database wishlist
+        if (isFavorite) {
+          const response = await fetch(`/api/wishlist?productId=${product.id}`, {
+            method: 'DELETE',
+          })
+          if (response.ok) {
+            setIsFavorite(false)
+            toast.success('Removed from favorites')
+          } else {
+            toast.error('Failed to remove from favorites')
+          }
+        } else {
+          const response = await fetch('/api/wishlist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              productId: product.id,
+            }),
+          })
+          if (response.ok) {
+            setIsFavorite(true)
+            toast.success('Added to favorites')
+          } else {
+            const error = await response.json()
+            toast.error(error.error || 'Failed to add to favorites')
+          }
+        }
+      } else {
+        // Use localStorage wishlist
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+        
+        if (isFavorite) {
+          const updated = wishlist.filter((item: { id: string }) => item.id !== product.id)
+          localStorage.setItem('wishlist', JSON.stringify(updated))
+          setIsFavorite(false)
+          toast.success('Removed from favorites')
+        } else {
+          const wishlistItem = {
+            id: product.id,
+            name: product.name,
+            price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+            imageUrl: product.imageUrl,
+          }
+          wishlist.push(wishlistItem)
+          localStorage.setItem('wishlist', JSON.stringify(wishlist))
+          setIsFavorite(true)
+          toast.success('Added to favorites')
+        }
+        
+        window.dispatchEvent(new Event('storage'))
       }
-      wishlist.push(wishlistItem)
-      localStorage.setItem('wishlist', JSON.stringify(wishlist))
-      setIsFavorite(true)
-      toast.success('Added to favorites')
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast.error('An error occurred')
+    } finally {
+      setIsLoading(false)
     }
-    
-    window.dispatchEvent(new Event('storage'))
   }
 
   return (
@@ -77,7 +142,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
           )}
           <button
             onClick={toggleFavorite}
-            className="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors z-10"
+            disabled={isLoading}
+            className="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <svg

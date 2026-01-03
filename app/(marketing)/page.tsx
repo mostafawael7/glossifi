@@ -88,23 +88,23 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <p className="text-lg md:text-xl mb-4 text-white/90 font-medium">
+            <p className="text-base sm:text-lg md:text-xl mb-4 text-white/90 font-medium px-4">
               Your mug... Your design... Your personal touch
             </p>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6">
               Welcome to Glossifi
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90 italic">
+            <p className="text-lg sm:text-xl md:text-2xl mb-8 text-white/90 italic">
               Every sip has a story
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/products">
-                <Button size="lg" variant="secondary" className="shadow-xl">
+                <Button size="lg" variant="secondary" className="shadow-xl w-full sm:w-auto">
                   Shop Now
                 </Button>
               </Link>
               <Link href="/about">
-                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-brand-purple">
+                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-brand-purple w-full sm:w-auto">
                   Learn More
                 </Button>
               </Link>
@@ -275,13 +275,13 @@ export default function HomePage() {
       {/* Special Gifts Section */}
       <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 px-4">
             Special Gifts... Printed Specifically for Your Loved Ones
           </h2>
-          <p className="text-xl text-slate-700 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-slate-700 mb-8 max-w-2xl mx-auto px-4">
             Create personalized mugs that tell a story. Perfect for birthdays, anniversaries, or just because.
           </p>
-          <Link href="/products">
+          <Link href="/custom-mug">
             <Button size="lg" className="shadow-xl">
               Explore Custom Options
             </Button>

@@ -31,6 +31,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
+        role: 'admin',
         redirect: false,
       })
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Input, Textarea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -17,6 +18,7 @@ interface CartItem {
 }
 
 export default function CheckoutPage() {
+  const { data: session } = useSession()
   const router = useRouter()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [formData, setFormData] = useState({
@@ -26,20 +28,69 @@ export default function CheckoutPage() {
     shippingAddress: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem('cart')
-    if (stored) {
-      const items = JSON.parse(stored)
-      setCartItems(items)
-      if (items.length === 0) {
-        toast.error('Your cart is empty')
-        router.push('/products')
+    const loadCart = async () => {
+      setLoading(true)
+      
+      if (session?.user?.id) {
+        // Load from database
+        try {
+          const response = await fetch('/api/cart')
+          if (response.ok) {
+            const dbCart = await response.json()
+            const formatted: CartItem[] = dbCart.map((item: any) => ({
+              id: item.product.id,
+              name: item.product.name,
+              price: typeof item.product.price === 'string' 
+                ? parseFloat(item.product.price) 
+                : item.product.price,
+              imageUrl: item.product.imageUrl,
+              quantity: item.quantity,
+            }))
+            setCartItems(formatted)
+            
+            // Pre-fill form with user data
+            if (session.user.name) {
+              setFormData(prev => ({
+                ...prev,
+                customerName: session.user.name || '',
+                customerEmail: session.user.email || '',
+              }))
+            }
+            
+            if (formatted.length === 0) {
+              toast.error('Your cart is empty')
+              router.push('/products')
+            }
+          } else {
+            router.push('/products')
+          }
+        } catch (error) {
+          console.error('Error loading cart:', error)
+          router.push('/products')
+        }
+      } else {
+        // Load from localStorage
+        const stored = localStorage.getItem('cart')
+        if (stored) {
+          const items = JSON.parse(stored)
+          setCartItems(items)
+          if (items.length === 0) {
+            toast.error('Your cart is empty')
+            router.push('/products')
+          }
+        } else {
+          router.push('/products')
+        }
       }
-    } else {
-      router.push('/products')
+      
+      setLoading(false)
     }
-  }, [router])
+
+    loadCart()
+  }, [router, session])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -72,7 +123,12 @@ export default function CheckoutPage() {
 
       if (response.ok) {
         toast.success('Order placed successfully!')
-        localStorage.removeItem('cart')
+        // Clear cart
+        if (session?.user?.id) {
+          // Cart is already cleared by the API when order is created
+        } else {
+          localStorage.removeItem('cart')
+        }
         router.push('/products')
       } else {
         const error = await response.json()
@@ -93,11 +149,11 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="py-12 bg-gray-50 min-h-screen">
+    <div className="py-8 sm:py-12 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Checkout</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 sm:mb-8">Checkout</h1>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           <div>
             <Card>
               <CardHeader>

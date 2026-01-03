@@ -18,13 +18,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { href: '/admin/dashboard', label: 'Dashboard' },
     { href: '/admin/products', label: 'Products' },
     { href: '/admin/orders', label: 'Orders' },
+    { href: '/admin/custom-mugs', label: 'Custom Mugs' },
   ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-cream to-white">
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <aside className="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white min-h-screen shadow-xl">
+        <aside className="w-full md:w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white md:min-h-screen shadow-xl">
           <div className="p-6">
             <Link href="/admin/dashboard" className="block mb-8">
               <Image 
@@ -55,7 +56,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               })}
             </nav>
           </div>
-          <div className="absolute bottom-0 w-64 p-6 border-t border-slate-700">
+          <div className="md:absolute md:bottom-0 w-full md:w-64 p-4 md:p-6 border-t border-slate-700">
             <Button
               onClick={() => signOut({ callbackUrl: '/admin/login' })}
               variant="outline"
@@ -67,7 +68,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-x-auto">
           {children}
         </main>
       </div>

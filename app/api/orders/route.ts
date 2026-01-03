@@ -16,6 +16,8 @@ const orderSchema = z.object({
       price: z.number(),
     })
   ),
+  trackingNumber: z.string().optional(),
+  shippingCarrier: z.string().optional(),
 })
 
 // GET /api/orders - List orders (admin only)
@@ -33,6 +35,26 @@ export async function GET(request: NextRequest) {
     const orders = await db.order.findMany({
       where: status ? { status: status as any } : undefined,
       orderBy: { createdAt: "desc" },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(orders)
@@ -51,13 +73,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = orderSchema.parse(body)
 
-    // Calculate total amount
-    const totalAmount = data.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    )
+    // Get user session if logged in
+    const session = await getServerSession(authOptions)
+    const userId = session?.user?.id || null
 
-    // Check stock availability
+    // Calculate total amount and validate products
+    let totalAmount = 0
+    const orderItemsData = []
+
     for (const item of data.items) {
       const product = await db.product.findUnique({
         where: { id: item.productId },
@@ -76,18 +99,45 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+
+      const itemTotal = item.price * item.quantity
+      totalAmount += itemTotal
+
+      orderItemsData.push({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price.toString(),
+      })
     }
 
-    // Create order
+    // Create order with order items
     const order = await db.order.create({
       data: {
+        userId: userId || undefined,
         customerName: data.customerName,
         customerEmail: data.customerEmail,
         customerPhone: data.customerPhone,
         shippingAddress: data.shippingAddress,
         totalAmount: totalAmount.toString(),
-        items: data.items as any,
         status: "PENDING",
+        trackingNumber: data.trackingNumber || undefined,
+        shippingCarrier: data.shippingCarrier || undefined,
+        items: {
+          create: orderItemsData,
+        },
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+              },
+            },
+          },
+        },
       },
     })
 
@@ -100,6 +150,13 @@ export async function POST(request: NextRequest) {
             decrement: item.quantity,
           },
         },
+      })
+    }
+
+    // Clear user's cart if logged in
+    if (userId) {
+      await db.cartItem.deleteMany({
+        where: { userId },
       })
     }
 

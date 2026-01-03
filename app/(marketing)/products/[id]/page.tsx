@@ -2,10 +2,19 @@
 
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/Button'
 import { formatPrice } from '@/lib/utils'
+import { ProductImageGallery } from '@/components/product/ProductImageGallery'
+import { Reviews } from '@/components/product/Reviews'
 import toast from 'react-hot-toast'
+
+interface ProductImage {
+  id: string
+  url: string
+  alt?: string | null
+  order: number
+}
 
 interface Product {
   id: string
@@ -15,6 +24,17 @@ interface Product {
   imageUrl: string
   stock: number
   category?: string
+  images?: ProductImage[]
+  reviews?: Array<{
+    id: string
+    rating: number
+    comment: string | null
+    createdAt: string
+    user: {
+      id: string
+      name: string
+    }
+  }>
 }
 
 interface CartItem {
@@ -26,6 +46,7 @@ interface CartItem {
 }
 
 export default function ProductDetailPage() {
+  const { data: session } = useSession()
   const params = useParams()
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
@@ -34,11 +55,29 @@ export default function ProductDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
-    if (product) {
+    const checkWishlistStatus = async () => {
+      if (!product) return
+
+      if (session?.user) {
+        // Check database wishlist
+        try {
+          const response = await fetch(`/api/wishlist/check?productId=${product.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setIsFavorite(data.isInWishlist)
+          }
+        } catch (error) {
+          console.error('Error checking wishlist:', error)
+        }
+      } else {
+        // Check localStorage wishlist
       const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
       setIsFavorite(wishlist.some((item: { id: string }) => item.id === product.id))
     }
-  }, [product])
+    }
+
+    checkWishlistStatus()
+  }, [product, session])
 
   useEffect(() => {
     if (params.id) {
@@ -63,9 +102,38 @@ export default function ProductDetailPage() {
     }
   }, [params.id, router])
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return
 
+    const isLoggedIn = !!session?.user?.id
+
+    if (isLoggedIn) {
+      // Add to database cart
+      try {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: product.id,
+            quantity,
+          }),
+        })
+
+        if (response.ok) {
+          toast.success('Added to cart!')
+          window.location.reload() // Reload to update cart in header
+        } else {
+          const error = await response.json()
+          toast.error(error.error || 'Failed to add to cart')
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error)
+        toast.error('Failed to add to cart')
+      }
+    } else {
+      // Add to localStorage
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]')
     const existingItem = cart.find((item) => item.id === product.id)
 
@@ -84,11 +152,45 @@ export default function ProductDetailPage() {
     localStorage.setItem('cart', JSON.stringify(cart))
     toast.success('Added to cart!')
     window.dispatchEvent(new Event('storage'))
+    }
   }
 
-  const toggleFavorite = () => {
+  const toggleFavorite = async () => {
     if (!product) return
 
+    try {
+      if (session?.user) {
+        // Use database wishlist
+        if (isFavorite) {
+          const response = await fetch(`/api/wishlist?productId=${product.id}`, {
+            method: 'DELETE',
+          })
+          if (response.ok) {
+            setIsFavorite(false)
+            toast.success('Removed from favorites')
+          } else {
+            toast.error('Failed to remove from favorites')
+          }
+        } else {
+          const response = await fetch('/api/wishlist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              productId: product.id,
+            }),
+          })
+          if (response.ok) {
+            setIsFavorite(true)
+            toast.success('Added to favorites')
+          } else {
+            const error = await response.json()
+            toast.error(error.error || 'Failed to add to favorites')
+          }
+        }
+      } else {
+        // Use localStorage wishlist
     const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
     
     if (isFavorite) {
@@ -110,6 +212,11 @@ export default function ProductDetailPage() {
     }
     
     window.dispatchEvent(new Event('storage'))
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast.error('An error occurred')
+    }
   }
 
   if (loading) {
@@ -131,22 +238,20 @@ export default function ProductDetailPage() {
     <div className="py-12 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-8 p-8">
-            <div className="relative h-96 w-full">
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                fill
-                className="object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, 50vw"
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 p-4 sm:p-6 md:p-8">
+            <div>
+              <ProductImageGallery
+                mainImage={product.imageUrl}
+                images={product.images || []}
+                productName={product.name}
               />
             </div>
             <div className="flex flex-col h-full">
               <div className="flex items-start justify-between mb-4">
-                <h1 className="text-3xl font-bold text-gray-900 flex-1">{product.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1 pr-2">{product.name}</h1>
                 <button
                   onClick={toggleFavorite}
-                  className="ml-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                  className="ml-2 sm:ml-4 w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors border border-gray-200 flex-shrink-0"
                   aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                 >
                   <svg
@@ -168,7 +273,7 @@ export default function ProductDetailPage() {
               {product.category && (
                 <p className="text-sm text-gray-500 mb-4">Category: {product.category}</p>
               )}
-              <p className="text-3xl font-bold text-blue-600 mb-6">
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600 mb-6">
                 {formatPrice(product.price)}
               </p>
               
@@ -218,6 +323,17 @@ export default function ProductDetailPage() {
               </Button>
             </div>
           </div>
+          
+          {/* Product Description */}
+          <div className="px-4 sm:px-6 md:px-8 pb-6 sm:pb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Description</h2>
+            <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">{product.description}</p>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <Reviews productId={product.id} />
         </div>
       </div>
     </div>
